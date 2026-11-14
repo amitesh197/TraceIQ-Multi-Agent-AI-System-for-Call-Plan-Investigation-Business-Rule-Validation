@@ -1,0 +1,29 @@
+case_id,question,jnj_id,selling_div_code,territory,expected_stage,expected_rule,expected_outcome
+TC01,Why is 70848778 not in 106-TD-7236738 in the JCPM UI?,70848778,106-TD,106-TD-7236738,INPUT,ALIGNMENT_REFRESH,Dropped: cust-terr not valid in mstr_cust_terr_zip
+TC02,Why was 33440026 removed from 200-RM-8474173?,33440026,200-RM,200-RM-8474173,INPUT,FORCED_DELETE,Dropped: listed in lnd_ce_forced_del
+TC03,Why is 81420848 in 250-OH-8544724 when iConnect never sent it?,81420848,250-OH,250-OH-8544724,INPUT,FORCED_INSERT,Added: listed in lnd_ce_forced_ins
+TC04,Why was 59793770 dropped from 200-SA-7012638?,59793770,200-SA,200-SA-7012638,INPUT,CUSTOMER_STATUS,Dropped: PROF with customer_status RETRD
+TC05,Why is inactive account 72184893 still in 250-RS-8429447?,72184893,250-RS,250-RS-8429447,NONE,CUSTOMER_STATUS,"Kept: status rule applies to PROF only, this is an ACCT"
+TC06,Why was 13862900 dropped from 106-PI-4118684?,13862900,106-PI,106-PI-4118684,INPUT,SPEC_INCL,Dropped: FM/IM not in 106-PI INCL list
+TC07,Why was 68513701 dropped from 250-SU-5141622?,68513701,250-SU,250-SU-5141622,INPUT,SPEC_EXCL,Dropped: secondary spec PED in 250-SU EXCL list
+TC08,Why was 30104567 dropped from 200-SI-5468479?,30104567,200-SI,200-SI-5468479,INPUT,KAISER_AFFILIATION,Dropped: 200-SI HCP affiliated with KAISER PERMANENTE
+TC09,43210048 is affiliated with Kaiser. Why is it still in 200-SG-9248115?,43210048,200-SG,200-SG-9248115,NONE,KAISER_AFFILIATION,Kept: Kaiser rule applies to 200-SI only
+TC10,Why is 33785866 missing from the final plan for 200-SG-8670611?,33785866,200-SG,200-SG-8670611,JCPM,REP_DROP,Dropped by the rep in the JCPM window
+TC11,Why is 31873132 now in 106-PR-5931951?,31873132,106-PR,106-PR-5931951,JCPM,REP_ADD,Added by the rep in the JCPM window
+TC12,The rep added 69772426 to 200-GS-6160088. Why is it not in the final plan?,69772426,200-GS,200-GS-6160088,OUTPUT,INVALID_VEEVA,"Added by rep in JCPM, then dropped: no valid Veeva ID"
+TC13,Why is 26900331 a non-target in 250-SU-5499883?,26900331,250-SU,250-SU-5499883,JCPM,REP_TARGET_CHANGE,Rep changed target flag TRUE -> FALSE
+TC14,Why did the sales direction for 28848429 in 106-PI-6516099 change?,28848429,106-PI,106-PI-6516099,JCPM,SALES_DIRECTION_CHANGE,Rep changed INVEGA SUSTENNA -> INVEGA SUSTENNA;CAPLYTA
+TC15,Why was 81684487 dropped from 106-NA-8484694?,81684487,106-NA,106-NA-8484694,OUTPUT,ITCI_EXCLUSION,Dropped: on ITCI exclusion list
+TC16,67605837 is on the ITCI list. Why is it still in 106-PI-4661268?,67605837,106-PI,106-PI-4661268,NONE,ITCI_EXCLUSION,Kept: ITCI exclusion applies to 106-NA/NB/NR only
+TC17,Why was 15331235 dropped from 200-GS-8662569?,15331235,200-GS,200-GS-8662569,OUTPUT,INVALID_VEEVA,Dropped: no valid Veeva ID
+TC18,Why was 18146677 dropped from 106-NR-9396532?,18146677,106-NR,106-NR-9396532,OUTPUT,CAPLYTA_HCP_TIER,"Dropped from NSR: target in NSS and NSR, tier 2"
+TC19,Why is 18146677 still in 106-NA-3001523?,18146677,106-NA,106-NA-3001523,NONE,CAPLYTA_HCP_TIER,Kept in NSS: tier 2 keeps the NSS record
+TC20,Why was 48511048 dropped from 106-NB-4631040?,48511048,106-NB,106-NB-4631040,OUTPUT,CAPLYTA_HCP_TIER,"Dropped from NSS: target in NSS and NSR, tier 5"
+TC21,35815004 is in both NSS and NSR. Why was nothing dropped from 106-NR-1811724?,35815004,106-NR,106-NR-1811724,NONE,CAPLYTA_HCP_TIER,"Kept: NSR record is a non-target, so the tier rule does not apply"
+TC22,Why was 44624054 removed from 250-SO-7146148?,44624054,250-SO,250-SO-7146148,OUTPUT,ONC_VSAP_REMOVAL,Dropped: whole territory is an ONC VSAP
+TC23,Why is 80868286 in 200-SD-3010489?,80868286,200-SD,200-SD-3010489,OUTPUT,IMM_DERM_MIRRORING,Added: mirrored from its paired base territory
+TC24,Is territory 106-NA-7632743 under capacity?,,106-NA,106-NA-7632743,OUTPUT,UNDER_CAPACITY,"Flagged: 5 distinct targets, below capacity 6 (no add/drop)"
+TC25,Is territory 200-DO-3445557 under capacity?,,200-DO,200-DO-3445557,OUTPUT,UNDER_CAPACITY,"Flagged: 7 distinct targets, below capacity 8 (no add/drop)"
+TC26,Is territory 250-OK-5713207 under capacity?,,250-OK,250-OK-5713207,OUTPUT,UNDER_CAPACITY,"Flagged: 3 distinct targets, below capacity 4 (no add/drop)"
+TC27,Why is 55875480 a target in 250-PL-7334921?,55875480,250-PL,250-PL-7334921,NONE,NONE,Kept as sent by iConnect: no rule or rep change affected it
+TC28,Why isn't 56371668 in 250-SU-6929595?,56371668,250-SU,250-SU-6929595,NONE,NOT_IN_ICONNECT,"Never sent by iConnect for this team, so it was never in the universe"

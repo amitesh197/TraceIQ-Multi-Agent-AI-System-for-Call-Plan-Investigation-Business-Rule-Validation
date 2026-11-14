@@ -1,0 +1,22 @@
+# Demo users for the prototype. Access is enforced in code on every request, never by the LLM.
+# teams: "*" means every team. Otherwise list selling_div_codes.
+# Passwords are stored as salted PBKDF2 hashes. Change one with:  python scripts/set_password.py <user_id>
+# Demo passwords (change before sharing the site): cor-demo-2026, imm-demo-2026, ns-demo-2026
+users:
+  cor_analyst:
+    name: ZS COR analyst
+    role: analyst
+    teams: "*"
+    password_hash: "pbkdf2$200000$b59ee3458977ead83200d2e8a5b5322f$3ccc91c7f3b9fc64b241bf64742202135b38e0e63746547637f648b60004fb9b"
+  imm_team_member:
+    name: ZS IMM team member
+    role: self_serve
+    teams: ["200-SD", "200-SG", "200-SI", "200-RM", "200-GS", "200-SA", "200-DO"]
+    access_expires: "2026-12-31"
+    password_hash: "pbkdf2$200000$502b57ba576e1eacda2d8ef4450ed9a9$dde578836916f989373b16e1ad17fcf05482e65326524c96da7624bb5b6c0d0d"
+  ns_team_member:
+    name: ZS NS team member
+    role: self_serve
+    teams: ["106-NA", "106-NB", "106-NR", "106-PI", "106-PR", "106-TD"]
+    access_expires: "2026-12-31"
+    password_hash: "pbkdf2$200000$4399dfb8d354cdf92263dbcf86cb30fc$b51e0555c8d89bfb1f0a23a1c0bb5d271b5d027654675fe01d8f0b95b719834a"

@@ -1,0 +1,136 @@
+# Business rules for the Q3'26 call plan, one entry per rule.
+# Add a new file per quarter (e.g. rules_Q4_26.yaml) when rules change, then run:
+#   python scripts/build_knowledge_base.py
+# teams: the selling divisions a rule applies to, or [ALL].
+quarter: "Q3'26"
+rules:
+  - id: q326-pipeline
+    stage: OVERVIEW
+    rule: PIPELINE
+    teams: [ALL]
+    title: Q3'26 call plan pipeline order
+    text: >
+      iConnect call plan files land in lnd_iconnect_call_plan_hcp and lnd_iconnect_call_plan_account, which are never
+      changed, and are copied to the stg tables. HCPs (PROF) and accounts (ACCT) are combined into inp_cppa_srchb_univ.
+      The alignment refresh produces pre_proc and proc. Forced inserts and deletes produce post_proc, where three input
+      rules run in place: customer status, specialty include/exclude and the 200-SI Kaiser affiliation exclusion. The
+      result, mstr_cppa_srchb_univ, is shown to reps in the JCPM UI. During the JCPM refinement window reps add, drop and
+      change customers; the result arrives as iconnect_cp_out (never changed). Six output rules then run in place on
+      iconnect_final_call_plan_out: ITCI exclusion, invalid Veeva, Caplyta HCP tier, ONC VSAP removal, IMM Derm
+      mirroring and the under-capacity flag.
+
+  - id: q326-alignment
+    stage: INPUT
+    rule: ALIGNMENT_REFRESH
+    teams: [ALL]
+    title: Alignment refresh
+    text: >
+      mstr_cust_terr_zip lists every customer-territory pair (jnj_id, territory) valid for the quarter. Any pair in the
+      input universe that is not in this table is removed during the alignment refresh, before the JCPM window.
+
+  - id: q326-forced
+    stage: INPUT
+    rule: FORCED_INSERT_DELETE
+    teams: [ALL]
+    title: Forced inserts and deletes
+    text: >
+      lnd_ce_forced_ins lists customer-territory pairs that must be inserted even if iConnect did not send them;
+      lnd_ce_forced_del lists pairs that must be deleted. Both are applied to the processed universe to build post_proc.
+
+  - id: q326-status
+    stage: INPUT
+    rule: CUSTOMER_STATUS
+    teams: [ALL]
+    title: Customer status rule
+    text: >
+      HCPs (acct_typ PROF) with customer status INACTV, RETRD or DEAD are removed from post_proc. Accounts (ACCT) are
+      never removed by this rule, whatever their status.
+
+  - id: q326-spec
+    stage: INPUT
+    rule: SPECIALTY
+    teams: [ALL]
+    title: Specialty include and exclude rules
+    text: >
+      Teams can have a specialty inclusion (INCL) or exclusion (EXCL) list in spec_incl_excl. For an INCL team, an HCP is
+      removed unless its primary or secondary specialty is on the list. For an EXCL team, an HCP is removed if its primary
+      or secondary specialty is on the list. Only HCPs are checked; accounts are not affected.
+
+  - id: q326-kaiser
+    stage: INPUT
+    rule: KAISER_AFFILIATION
+    teams: [200-SI]
+    title: 200-SI IMAAVY Kaiser affiliation exclusion
+    text: >
+      For HCPs in 200-SI (IMAAVY), all affiliations are looked up in jnj_affiliation. If any affiliated account name
+      contains KAISER (case-insensitive, e.g. Kaiser Permanente), the HCP is removed. The rule does not apply to any
+      other team.
+
+  - id: q326-jcpm
+    stage: JCPM
+    rule: JCPM_WINDOW
+    teams: [ALL]
+    title: JCPM refinement window
+    text: >
+      During the JCPM refinement window reps can add customers (including customers aligned to another territory),
+      drop customers, change the target flag (TRUE target, FALSE non-target) and change the sales direction (the
+      products to promote, joined with semicolons). Changes are visible by comparing mstr_cppa_srchb_univ with
+      iconnect_cp_out.
+
+  - id: q326-itci
+    stage: OUTPUT
+    rule: ITCI_EXCLUSION
+    teams: [106-NA, 106-NB, 106-NR]
+    title: ITCI HCP exclusion
+    text: >
+      HCPs (PROF) in 106-NA, 106-NB and 106-NR whose jnj_id is in itci_jnj_exclusion are removed from the final iConnect
+      Output. HCPs on the list in other teams are not affected.
+
+  - id: q326-veeva
+    stage: OUTPUT
+    rule: INVALID_VEEVA
+    teams: [ALL]
+    title: Invalid Veeva removal
+    text: >
+      Every record whose jnj_id has no valid Veeva ID in mstr_jcpm_employee_veeva is removed from the final iConnect
+      Output, for HCPs and accounts in every team.
+
+  - id: q326-caplyta
+    stage: OUTPUT
+    rule: CAPLYTA_HCP_TIER
+    teams: [106-NA, 106-NB, 106-NR]
+    title: ITCI Caplyta HCP tier rule (NSS vs NSR)
+    text: >
+      NSS is 106-NA and 106-NB; NSR is 106-NR. For HCPs that are targets in both NSS and NSR, the tier in
+      caplyta_hcp_tier decides which record stays. Tiers 1 to 3 keep the NSS record and the NSR record is removed.
+      Tiers 4 to 6 keep the NSR record and the NSS record(s) are removed. Non-targets and HCPs with no tier are not
+      affected.
+
+  - id: q326-vsap
+    stage: OUTPUT
+    rule: ONC_VSAP_REMOVAL
+    teams: [250-SO, 250-SU, 250-OH, 250-OI, 250-PT, 250-OK, 250-OL, 250-RS, 250-PL, 250-AB]
+    title: ONC VSAP territory removal
+    text: >
+      Every record in an ONC territory listed in onc_vsap_q326 is removed from the final iConnect Output, whatever the
+      customer.
+
+  - id: q326-mirroring
+    stage: OUTPUT
+    rule: IMM_DERM_MIRRORING
+    teams: [200-SD]
+    title: IMM Derm mirroring (200-SD)
+    text: >
+      imm_derm_mapping pairs each 200-SD base territory with a mirror territory. Base territories have 0 as the
+      second-last digit and the mirror is the same number with 8 (e.g. 200-SD-6814504 and 200-SD-6814584). A customer
+      present in only one territory of a pair is copied into the other, so both territories always hold the same
+      customers.
+
+  - id: q326-capacity
+    stage: OUTPUT
+    rule: UNDER_CAPACITY
+    teams: [106-NA, 200-DO, 250-OK]
+    title: Under-capacity territories
+    text: >
+      under_capacity_terr sets a minimum number of distinct targets per territory for some teams. Territories below the
+      minimum on the final iConnect Output are highlighted in the output mail. No customer is added or dropped.
